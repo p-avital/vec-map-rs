@@ -86,12 +86,23 @@ impl<K: PartialEq, V> VecMap<K, V> {
     pub fn with_capacity(capacity: usize)->Self {
         VecMap {inner: Vec::with_capacity(capacity)}
     }
-    pub unsafe fn inner(&self) -> &Vec<(K, V)> {
+    /// Returns a reference to the underlying vector, since the reference is immutable, you should be fine.
+    pub fn inner(&self) -> &Vec<(K, V)> {
         &self.inner
     }
+    /// Returns a mutable reference to the underlying vector.
+    /// Marked unsafe because you might break assertions such as key unicity if you're not careful.
     pub unsafe fn inner_mut(&mut self) -> &mut Vec<(K, V)> {
         &mut self.inner
     }
+    /// Pushes the (key, value) tuple at the end of the map.
+    /// Marked unsafe because you might break key unicity if you're not careful.
+    pub unsafe fn push_insert(&mut self, key: K, value: V) {
+        self.inner.push((key, value))
+    }
+    /// If the key was already in use, replace its associated value by the new one and return Some(old_value),
+    /// otherwise, add the (key, value) tuple to the items.
+    /// Capacity extension may invalidate aliases to elements of self.
     pub fn insert(&mut self, key: K, mut value: V) -> Option<V> {
         if let Some(slot) = self.get_mut(&key) {
             std::mem::swap(&mut value, slot);
@@ -101,27 +112,34 @@ impl<K: PartialEq, V> VecMap<K, V> {
             None
         }
     }
+    /// Returns a reference to the value associated to `key` if it exists.
     pub fn get(&self, key: &K) -> Option<&V> {
         self.inner.iter().find(|e| &e.0 == key).map(|e| &e.1)
     }
+    /// Returns a mutable reference to the value associated to `key` if it exists.
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         self.inner
             .iter_mut()
             .find(|e| &e.0 == key)
             .map(|e| &mut e.1)
     }
+    /// Removes a (key, value) tuple from the map and returns the associated value if it existed.
+    /// This invalidates aliases to the target (key, value) pair as well as to the last (key, value) pair in the map.
     pub fn remove(&mut self, key: &K) -> Option<V> {
         self.inner
             .iter()
             .position(|e| &e.0 == key)
             .map(|position| self.inner.swap_remove(position).1)
     }
+    /// Returns an iterator over the references to the keys in the map.
     pub fn keys<'l>(&'l self) -> Box<dyn Iterator<Item = &'l K> + 'l> {
         Box::new(self.inner.iter().map(|e| &e.0))
     }
+    /// Returns a map-like iterator over the key-value pairs.
     pub fn iter<'l>(&'l self) -> Box<dyn Iterator<Item = (&'l K, &'l V)> + 'l> {
         Box::new(self.inner.iter().map(|e| (&e.0, &e.1)))
     }
+    /// Returns a map-like iterator over the key-value pairs with the reference to value being mutable.
     pub fn iter_mut<'l>(&'l mut self) -> Box<dyn Iterator<Item = (&'l K, &'l mut V)> + 'l> {
         Box::new(self.inner.iter_mut().map(|e| (&e.0, &mut e.1)))
     }
