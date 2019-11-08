@@ -1,0 +1,12 @@
+[package]
+name = "vec-map"
+version = "0.1.0"
+keywords = ["map", "structures"]
+authors = ["Pierre Avital <pierre.avital@gmail.com>"]
+edition = "2018"
+license = "MPL-2.0"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
