@@ -1,7 +1,7 @@
 [package]
 name = "vector-map"
 version = "0.2.0"
-keywords = ["map", "structures"]
+keywords = ["map", "structures", "vec-map"]
 authors = ["Pierre Avital <pierre.avital@gmail.com>"]
 edition = "2018"
 license = "MPL-2.0"

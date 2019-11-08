@@ -29,7 +29,9 @@ pub struct VecMap<K: PartialEq, V> {
 
 impl<K: PartialEq + std::fmt::Debug, V: std::fmt::Debug> std::fmt::Debug for VecMap<K, V> {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        f.debug_map().entries(self.inner.iter().map(|e|(&e.0, &e.1))).finish()
+        f.debug_map()
+            .entries(self.inner.iter().map(|e| (&e.0, &e.1)))
+            .finish()
     }
 }
 
@@ -83,8 +85,10 @@ impl<K: PartialEq, V> VecMap<K, V> {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn with_capacity(capacity: usize)->Self {
-        VecMap {inner: Vec::with_capacity(capacity)}
+    pub fn with_capacity(capacity: usize) -> Self {
+        VecMap {
+            inner: Vec::with_capacity(capacity),
+        }
     }
     /// Returns a reference to the underlying vector, since the reference is immutable, you should be fine.
     pub fn inner(&self) -> &Vec<(K, V)> {
@@ -113,14 +117,28 @@ impl<K: PartialEq, V> VecMap<K, V> {
         }
     }
     /// Returns a reference to the value associated to `key` if it exists.
-    pub fn get(&self, key: &K) -> Option<&V> {
-        self.inner.iter().find(|e| &e.0 == key).map(|e| &e.1)
+    pub fn get_pair<Lookup: PartialEq<K>>(&self, key: &Lookup) -> Option<(&K, &V)> {
+        self.inner
+            .iter()
+            .find(|e| key == &e.0)
+            .map(|e| (&e.0, &e.1))
     }
     /// Returns a mutable reference to the value associated to `key` if it exists.
-    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+    pub fn get_pair_mut<Lookup: PartialEq<K>>(&mut self, key: &Lookup) -> Option<(&K, &mut V)> {
         self.inner
             .iter_mut()
-            .find(|e| &e.0 == key)
+            .find(|e| key == &e.0)
+            .map(|e| (&e.0, &mut e.1))
+    }
+    /// Returns a reference to the value associated to `key` if it exists.
+    pub fn get<Lookup: PartialEq<K>>(&self, key: &Lookup) -> Option<&V> {
+        self.inner.iter().find(|e| key == &e.0).map(|e| &e.1)
+    }
+    /// Returns a mutable reference to the value associated to `key` if it exists.
+    pub fn get_mut<Lookup: PartialEq<K>>(&mut self, key: &Lookup) -> Option<&mut V> {
+        self.inner
+            .iter_mut()
+            .find(|e| key == &e.0)
             .map(|e| &mut e.1)
     }
     /// Removes a (key, value) tuple from the map and returns the associated value if it existed.
@@ -203,6 +221,11 @@ mod bench {
                 }
             });
         }
+        fn iteration(b: &mut Bencher, size: usize) {
+            use std::iter::FromIterator;
+            let map = Map::from_iter((0..size).map(|x| (x, x + 2)));
+            b.iter(|| map.iter().for_each(|_| ()))
+        }
         #[bench]
         fn insertion_16(b: &mut Bencher) {
             insertion(b, 16)
@@ -234,6 +257,18 @@ mod bench {
         #[bench]
         fn colliding_insertion_16000(b: &mut Bencher) {
             colliding_insertion(b, 16000)
+        }
+        #[bench]
+        fn iteration_16(b: &mut Bencher) {
+            iteration(b, 16)
+        }
+        #[bench]
+        fn iteration_128(b: &mut Bencher) {
+            iteration(b, 128)
+        }
+        #[bench]
+        fn iteration_16000(b: &mut Bencher) {
+            iteration(b, 16000)
         }
     }
     mod vec_map {
@@ -255,6 +290,11 @@ mod bench {
                 }
             });
         }
+        fn iteration(b: &mut Bencher, size: usize) {
+            use std::iter::FromIterator;
+            let map = Map::from_iter((0..size).map(|x| (x, x + 2)));
+            b.iter(|| map.iter().for_each(|_| ()))
+        }
         #[bench]
         fn insertion_16(b: &mut Bencher) {
             insertion(b, 16)
@@ -286,6 +326,18 @@ mod bench {
         #[bench]
         fn colliding_insertion_16000(b: &mut Bencher) {
             colliding_insertion(b, 16000)
+        }
+        #[bench]
+        fn iteration_16(b: &mut Bencher) {
+            iteration(b, 16)
+        }
+        #[bench]
+        fn iteration_128(b: &mut Bencher) {
+            iteration(b, 128)
+        }
+        #[bench]
+        fn iteration_16000(b: &mut Bencher) {
+            iteration(b, 16000)
         }
     }
 }

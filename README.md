@@ -17,3 +17,6 @@ Like HashMap, VecMap doesn't guarantee pointer stability: growing capacity may r
 
 # When to use it
 You may want to use a typedef to allow yourself to experiment and validate that it's good for your use-case, but as a rule of thumb: if you don't plan on storing more than a hundred elements in your map, but still want to express in your code that it IS a map, you should probably go with a VecMap.
+
+## Why are the iterators over VecMap boxed?
+In short: because of closures, feel free to use `map.ìnner()` to get unboxed iterators. But don't worry about the boxing: boxed iteration over a vector is still faster than iteration in a HashMap.
