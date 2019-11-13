@@ -141,6 +141,20 @@ impl<K: PartialEq, V> VecMap<K, V> {
             .find(|e| key == &e.0)
             .map(|e| &mut e.1)
     }
+    /// Returns a mutable reference to the value associated to `key` if it exists,
+    /// or to the newly inserted defaulted value otherwise.
+    pub fn get_mut_init<'l>(&'l mut self, key: K) -> &'l mut V where V: Default{
+        if let Some(position) = self.inner.iter().position(|el| key == el.0) {
+            &mut self.inner[position].1
+        } else {
+            self.inner.push((key, Default::default()));
+            if let Some(last) = self.inner.last_mut() {
+                &mut last.1
+            } else {
+                unsafe {std::hint::unreachable_unchecked()};
+            }
+        }
+    }
     /// Removes a (key, value) tuple from the map and returns the associated value if it existed.
     /// This invalidates aliases to the target (key, value) pair as well as to the last (key, value) pair in the map.
     pub fn remove(&mut self, key: &K) -> Option<V> {
