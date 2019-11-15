@@ -1,4 +1,5 @@
-#![feature(test)]
+#![cfg_attr(feature="nightly", feature(test))]
+#[cfg(feature="nightly")]
 extern crate test;
 
 use std::iter::FromIterator;
@@ -214,7 +215,7 @@ impl<K: PartialEq, V> FromIterator<(K, V)> for VecMap<K, V> {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature="nightly"))]
 mod bench {
     mod hash_map {
         use crate::test::Bencher;

@@ -1,6 +1,6 @@
 [package]
 name = "vector-map"
-version = "0.4.0"
+version = "0.5.0"
 keywords = ["map", "structures", "vec-map"]
 authors = ["Pierre Avital <pierre.avital@gmail.com>"]
 edition = "2018"
@@ -9,5 +9,7 @@ readme = "README.md"
 description = "VecMap<K, V>: the Map API for Vec<(K, V)>"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+nightly = []
 
 [dependencies]
