@@ -176,6 +176,10 @@ impl<K: PartialEq, V> VecMap<K, V> {
     pub fn iter_mut<'l>(&'l mut self) -> Box<dyn Iterator<Item = (&'l K, &'l mut V)> + 'l> {
         Box::new(self.inner.iter_mut().map(|e| (&e.0, &mut e.1)))
     }
+
+    pub fn contains_key(&self, key: &K) -> bool {
+        self.inner.iter().any(|(k, _)| k==key)
+    }
 }
 
 impl<K: PartialEq, V> IntoIterator for VecMap<K, V> {
