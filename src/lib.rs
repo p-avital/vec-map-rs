@@ -180,6 +180,10 @@ impl<K: PartialEq, V> VecMap<K, V> {
     pub fn contains_key(&self, key: &K) -> bool {
         self.inner.iter().any(|(k, _)| k==key)
     }
+
+    pub fn clear(&mut self) {
+        self.inner.clear()
+    }
 }
 
 impl<K: PartialEq, V> IntoIterator for VecMap<K, V> {
