@@ -82,6 +82,48 @@ impl<K: PartialEq, V> Into<Vec<(K, V)>> for VecMap<K, V> {
     }
 }
 
+#[macro_export]
+macro_rules! vecmap {
+    {$K: ty; $($key: tt: $value: expr),*} => {{
+        let mut map = VecMap::<$K, _>::new();
+        insert_into!(map, $($key: $value),*);
+        map
+    }};
+    {$K: ty, $V: ty; $($key: tt: $value: expr),*} => {{
+        let mut map = VecMap::<$K, $V>::new();
+        insert_into!(map, $V; $($key: $value),*);
+        map
+    }};
+    {$($key: tt: $value: expr),*} => {{
+        let mut map = VecMap::new();
+        $(map.insert($key, $value);)*
+        map
+    }};
+}
+
+#[macro_export]
+macro_rules! insert_into {
+    ($map: expr, $($key: tt: $value: expr),*) => {{
+        $($map.insert($key.into(), $value);)*
+    }};
+    ($map: expr, $V: ty; $($key: tt: $value: expr),*) => {{
+        $($map.insert($key.into(), <$V>::from($value));)*
+    }};
+}
+
+#[test]
+fn macros() {
+    let map = vecmap!{u8; 0: 50, 1: 30};
+    let str_map = vecmap!{"hello": "World".to_owned()};
+    let mut owning_map = vecmap!{String, String; "hello": "World"};
+    let john = "John";
+    let snow = "Snow";
+    insert_into!(owning_map, _; john: "Snow", "White": "Walker");
+    println!("{:?}", map);
+    println!("{:?}", str_map);
+    println!("{:?}", owning_map);
+}
+
 impl<K: PartialEq, V> VecMap<K, V> {
     pub fn new() -> Self {
         Self::default()
