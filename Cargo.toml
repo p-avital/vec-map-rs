@@ -1,12 +1,13 @@
 [package]
 name = "vector-map"
-version = "1.0.0"
+version = "1.0.1"
 keywords = ["map", "structures", "vec-map"]
 authors = ["Pierre Avital <pierre.avital@gmail.com>"]
 edition = "2018"
 license = "MPL-2.0"
 readme = "README.md"
-description = "VecMap<K, V>: the Map API for Vec<(K, V)>"
+description = "VecMap<K, V>: a Linear Search with Map API"
+repository = "https://github.com/p-avital/vec-map-rs.git"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
@@ -16,13 +17,13 @@ enable_contracts = []
 default = ["contracts/disable_contracts"]
 
 [dependencies]
-contracts = ""
-rand = ""
+contracts = "0.4"
+rand = "0.7"
 serde = { version = "1.0", optional = true }
 serde_test = { version = "1.0", optional = true }
 
 [dev-dependencies]
-linear-map = ""
+linear-map = "1.2"
 
 [lib]
 test = false
