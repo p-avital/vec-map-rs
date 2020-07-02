@@ -1,6 +1,6 @@
 [package]
 name = "vector-map"
-version = "0.6.0"
+version = "1.0.0"
 keywords = ["map", "structures", "vec-map"]
 authors = ["Pierre Avital <pierre.avital@gmail.com>"]
 edition = "2018"
@@ -11,5 +11,19 @@ description = "VecMap<K, V>: the Map API for Vec<(K, V)>"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
 nightly = []
+serde_impl = ["serde", "serde_test"]
+enable_contracts = []
+default = ["contracts/disable_contracts"]
 
 [dependencies]
+contracts = ""
+rand = ""
+serde = { version = "1.0", optional = true }
+serde_test = { version = "1.0", optional = true }
+
+[dev-dependencies]
+linear-map = ""
+
+[lib]
+test = false
+bench = false
