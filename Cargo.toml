@@ -12,18 +12,17 @@ repository = "https://github.com/p-avital/vec-map-rs.git"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
 nightly = []
-serde_impl = ["serde", "serde_test"]
+serde_impl = ["serde"]
 enable_contracts = []
 default = ["contracts/disable_contracts"]
 
 [dependencies]
-contracts = "0.4"
-rand = "0.7"
+contracts = "0.6"
 serde = { version = "1.0", optional = true }
-serde_test = { version = "1.0", optional = true }
 
 [dev-dependencies]
 linear-map = "1.2"
+rand = "0.9"
 
 [lib]
 test = false
