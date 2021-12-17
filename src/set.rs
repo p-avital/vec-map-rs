@@ -321,7 +321,7 @@ impl<T> VecSet<T> {
     /// assert_eq!(set.contains(&1), true);
     /// assert_eq!(set.contains(&4), false);
     /// ```
-    pub fn contains<Q: PartialEq<T>>(&self, value: &Q) -> bool {
+    pub fn contains<Q: PartialEq<T> + ?Sized>(&self, value: &Q) -> bool {
         self.map.contains_key(value)
     }
 
@@ -446,7 +446,7 @@ impl<T> VecSet<T> {
     /// assert_eq!(set.remove(&2), false);
     /// ```
 
-    pub fn remove<Q: PartialEq<T>>(&mut self, value: &Q) -> bool {
+    pub fn remove<Q: PartialEq<T> + ?Sized>(&mut self, value: &Q) -> bool {
         self.map.remove(value).is_some()
     }
 }
