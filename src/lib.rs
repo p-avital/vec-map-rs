@@ -536,7 +536,7 @@ fn reorder() {
     let m = 128;
     let expected: Vec<usize> = (0..n).collect();
     let mut test = expected.clone();
-    for i in 0..m {
+    for _ in 0..m {
         let rands: Vec<usize> = test.iter().map(|_| rand::random()).collect();
         test.sort_by_key(|x| rands[*x]);
         let mut indices: Vec<usize> = (0..test.len()).collect();
@@ -544,9 +544,9 @@ fn reorder() {
         reorder_vec(&mut test, indices.into_iter());
         assert_eq!(test, expected);
     }
-    for i in 0..m {
+    for _ in 0..m {
         let mut map: VecMap<usize, f32> = VecMap::with_capacity(n);
-        for n in 0..n {
+        for _ in 0..n {
             map.insert(rand::random(), rand::random());
         }
         let clone = map.clone();
