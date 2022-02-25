@@ -151,7 +151,7 @@ impl<T> VecSet<T> {
     {
         Difference {
             iter: self.iter(),
-            other: other,
+            other,
         }
     }
 
@@ -206,7 +206,7 @@ impl<T> VecSet<T> {
     pub fn intersection<'a>(&'a self, other: &'a VecSet<T>) -> Intersection<'a, T> {
         Intersection {
             iter: self.iter(),
-            other: other,
+            other,
         }
     }
 
@@ -517,9 +517,9 @@ where
     }
 }
 
-impl<K: PartialEq> Into<Vec<K>> for VecSet<K> {
-    fn into(self) -> Vec<K> {
-        self.map.keys
+impl<K: PartialEq> From<VecSet<K>> for Vec<K> {
+    fn from(val: VecSet<K>) -> Self {
+        val.map.keys
     }
 }
 

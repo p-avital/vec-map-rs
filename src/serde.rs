@@ -38,12 +38,12 @@ where
 }
 
 #[allow(missing_docs)]
+#[derive(Default)]
 pub struct VecMapVisitor<K, V> {
     marker: PhantomData<VecMap<K, V>>,
 }
 
 impl<K, V> VecMapVisitor<K, V> {
-    #[allow(missing_docs)]
     pub fn new() -> Self {
         VecMapVisitor {
             marker: PhantomData,
@@ -116,6 +116,7 @@ where
 }
 
 #[allow(missing_docs)]
+#[derive(Default)]
 pub struct VecSetVisitor<K> {
     marker: PhantomData<VecSet<K>>,
 }

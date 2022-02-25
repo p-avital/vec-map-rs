@@ -1,7 +1,3 @@
-#![cfg_attr(feature = "nightly", feature(test))]
-#[cfg(feature = "nightly")]
-extern crate test;
-
 #[cfg(feature = "serde_impl")]
 pub mod serde;
 pub mod set;
@@ -112,7 +108,7 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
-    pub fn drain<'l>(&'l mut self) -> Drain<'l, K, V> {
+    pub fn drain(&mut self) -> Drain<K, V> {
         Drain {
             iter: self.keys.drain(..).zip(self.values.drain(..)),
         }
@@ -166,13 +162,13 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
-    pub fn iter<'a>(&'a self) -> Iter<'a, K, V> {
+    pub fn iter(&self) -> Iter<K, V> {
         Iter {
             iter: self.keys.iter().zip(self.values.iter()),
         }
     }
 
-    pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, K, V> {
+    pub fn iter_mut(&mut self) -> IterMut<K, V> {
         IterMut {
             iter: self.keys.iter().zip(self.values.iter_mut()),
         }
@@ -189,6 +185,7 @@ impl<K, V> VecMap<K, V> {
     }
 
     /// Much faster than `self == other`, but will return false if the order of the data isn't identical.
+    /// # Safety
     /// Note that for the order of data with two `VecMap`s to be identical, they must either have been both sorted,
     /// or they must have undergone the insertion and removal of keys in the same order.
     pub unsafe fn identical(&self, other: &Self) -> bool
@@ -199,14 +196,14 @@ impl<K, V> VecMap<K, V> {
         self.keys == other.keys && self.values == other.values
     }
 
-    pub fn keys<'a>(&'a self) -> Keys<'a, K, V> {
+    pub fn keys(&self) -> Keys<K, V> {
         Keys {
             iter: self.keys.iter(),
             _phantom: Default::default(),
         }
     }
 
-    pub fn values<'a>(&'a self) -> Values<'a, K, V> {
+    pub fn values(&self) -> Values<K, V> {
         Values {
             iter: self.values.iter(),
             _phantom: Default::default(),
