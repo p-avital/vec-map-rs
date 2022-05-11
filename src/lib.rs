@@ -142,6 +142,20 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
+    pub fn entry(&mut self, key: K) -> Entry<K, V>
+    where
+        K: PartialEq
+    {
+        match self
+            .keys()
+            .enumerate()
+            .find(|(_, k)|  &&key == k)
+            .map(|(n, _)| n) {
+                Some(index) => Entry::Occupied(OccupiedEntry{ map: self, index }),
+                None => Entry::Vacant(VacantEntry{ map: self, key }),
+            }
+    }
+
     #[post(!old(self.contains_key(key)) -> ret.is_none())]
     #[post(old(self.contains_key(key)) -> ret.is_some())]
     #[post(self.contains_key(key) == false)]
