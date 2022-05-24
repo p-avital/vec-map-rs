@@ -72,23 +72,23 @@ impl<K, V> VecMap<K, V> {
     }
 
     #[inline]
-    fn position<Q: PartialEq<K>>(&self, key: &Q) -> Option<usize> {
+    fn position<Q: PartialEq<K> + ?Sized>(&self, key: &Q) -> Option<usize> {
         self.keys.iter().position(|k| key == k)
     }
 
-    pub fn contains_key<Q: PartialEq<K>>(&self, key: &Q) -> bool {
+    pub fn contains_key<Q: PartialEq<K> + ?Sized>(&self, key: &Q) -> bool {
         self.position(key).is_some()
     }
 
     #[post(!self.contains_key(key) -> ret.is_none())]
     #[post(self.contains_key(key) -> ret.is_some())]
-    pub fn get<'l, Q: PartialEq<K>>(&'l self, key: &Q) -> Option<&'l V> {
+    pub fn get<'l, Q: PartialEq<K> + ?Sized>(&'l self, key: &Q) -> Option<&'l V> {
         self.position(key).map(|p| &self.values[p])
     }
 
     #[post(!old(self.contains_key(key)) -> ret.is_none())]
     #[post(old(self.contains_key(key)) -> ret.is_some())]
-    pub fn get_mut<'l, Q: PartialEq<K>>(&'l mut self, key: &Q) -> Option<&'l mut V> {
+    pub fn get_mut<'l, Q: PartialEq<K> + ?Sized>(&'l mut self, key: &Q) -> Option<&'l mut V> {
         self.position(key).map(move |p| &mut self.values[p])
     }
 
@@ -126,14 +126,14 @@ impl<K, V> VecMap<K, V> {
 
     #[post(!self.contains_key(key) -> ret.is_none())]
     #[post(self.contains_key(key) -> ret.is_some())]
-    pub fn get_key_value<'l, Q: PartialEq<K>>(&'l self, key: &Q) -> Option<(&'l K, &'l V)> {
+    pub fn get_key_value<'l, Q: PartialEq<K> + ?Sized>(&'l self, key: &Q) -> Option<(&'l K, &'l V)> {
         self.position(key).map(|p| (&self.keys[p], &self.values[p]))
     }
 
     #[post(!old(self.contains_key(key)) -> ret.is_none())]
     #[post(old(self.contains_key(key)) -> ret.is_some())]
     #[post(self.contains_key(key) == false)]
-    pub fn remove<Q: PartialEq<K>>(&mut self, key: &Q) -> Option<V> {
+    pub fn remove<Q: PartialEq<K> + ?Sized>(&mut self, key: &Q) -> Option<V> {
         if let Some(index) = self.position(key) {
             self.keys.swap_remove(index);
             Some(self.values.swap_remove(index))
@@ -159,7 +159,7 @@ impl<K, V> VecMap<K, V> {
     #[post(!old(self.contains_key(key)) -> ret.is_none())]
     #[post(old(self.contains_key(key)) -> ret.is_some())]
     #[post(self.contains_key(key) == false)]
-    pub fn remove_entry<Q: PartialEq<K>>(&mut self, key: &Q) -> Option<(K, V)> {
+    pub fn remove_entry<Q: PartialEq<K> + ?Sized>(&mut self, key: &Q) -> Option<(K, V)> {
         if let Some(index) = self.position(key) {
             Some((self.keys.swap_remove(index), self.values.swap_remove(index)))
         } else {
@@ -283,14 +283,14 @@ impl<K: PartialEq, V> FromIterator<(K, V)> for VecMap<K, V> {
     }
 }
 
-impl<'a, Q: PartialEq<K>, K, V> Index<&'a Q> for VecMap<K, V> {
+impl<'a, Q: PartialEq<K> + ?Sized, K, V> Index<&'a Q> for VecMap<K, V> {
     type Output = V;
     fn index(&self, key: &'a Q) -> &Self::Output {
         self.get(key).unwrap()
     }
 }
 
-impl<'a, Q: PartialEq<K>, K, V> IndexMut<&'a Q> for VecMap<K, V> {
+impl<'a, Q: PartialEq<K> + ?Sized, K, V> IndexMut<&'a Q> for VecMap<K, V> {
     fn index_mut(&mut self, key: &'a Q) -> &mut Self::Output {
         self.get_mut(key).unwrap()
     }
@@ -536,7 +536,7 @@ fn reorder() {
     let m = 128;
     let expected: Vec<usize> = (0..n).collect();
     let mut test = expected.clone();
-    for i in 0..m {
+    for _ in 0..m {
         let rands: Vec<usize> = test.iter().map(|_| rand::random()).collect();
         test.sort_by_key(|x| rands[*x]);
         let mut indices: Vec<usize> = (0..test.len()).collect();
@@ -544,9 +544,9 @@ fn reorder() {
         reorder_vec(&mut test, indices.into_iter());
         assert_eq!(test, expected);
     }
-    for i in 0..m {
+    for _ in 0..m {
         let mut map: VecMap<usize, f32> = VecMap::with_capacity(n);
-        for n in 0..n {
+        for _ in 0..n {
             map.insert(rand::random(), rand::random());
         }
         let clone = map.clone();
@@ -564,4 +564,13 @@ fn reorder() {
             .is_some());
         assert_eq!(map, clone);
     }
+}
+
+#[test]
+fn unsized_key_queries() {
+    let mut map = VecMap::<String, u8>::new();
+    map.insert("foo".to_owned(), 1);
+    map.insert("bar".to_owned(), 2);
+
+    assert_eq!(&map["bar"], &2);
 }
