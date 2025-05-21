@@ -20,7 +20,6 @@ impl<T: PartialEq> VecSet<T> {
     /// let mut set: VecSet<i32> = VecSet::new();
     /// ```
     #[inline]
-
     pub fn new() -> VecSet<T> {
         VecSet { map: VecMap::new() }
     }
@@ -53,7 +52,6 @@ impl<T> VecSet<T> {
     /// assert!(set.capacity() >= 100);
     /// ```
     #[inline]
-
     pub fn capacity(&self) -> usize {
         self.map.capacity()
     }
@@ -73,7 +71,6 @@ impl<T> VecSet<T> {
     /// let mut set: VecSet<i32> = VecSet::new();
     /// set.reserve(10);
     /// ```
-
     pub fn reserve(&mut self, additional: usize) {
         self.map.reserve(additional)
     }
@@ -94,7 +91,6 @@ impl<T> VecSet<T> {
     /// set.shrink_to_fit();
     /// assert!(set.capacity() >= 2);
     /// ```
-
     pub fn shrink_to_fit(&mut self) {
         self.map.shrink_to_fit()
     }
@@ -115,7 +111,6 @@ impl<T> VecSet<T> {
     ///     println!("{}", x);
     /// }
     /// ```
-
     pub fn iter(&self) -> Iter<T> {
         Iter {
             iter: self.map.keys(),
@@ -144,7 +139,6 @@ impl<T> VecSet<T> {
     /// let diff: VecSet<_> = b.difference(&a).cloned().collect();
     /// assert_eq!(diff, [4].iter().cloned().collect());
     /// ```
-
     pub fn difference<'a>(&'a self, other: &'a VecSet<T>) -> Difference<'a, T>
     where
         T: PartialEq,
@@ -175,7 +169,6 @@ impl<T> VecSet<T> {
     /// assert_eq!(diff1, diff2);
     /// assert_eq!(diff1, [1, 4].iter().cloned().collect());
     /// ```
-
     pub fn symmetric_difference<'a>(&'a self, other: &'a VecSet<T>) -> SymmetricDifference<'a, T>
     where
         T: PartialEq,
@@ -202,7 +195,6 @@ impl<T> VecSet<T> {
     /// let intersection: VecSet<_> = a.intersection(&b).cloned().collect();
     /// assert_eq!(intersection, [2, 3].iter().cloned().collect());
     /// ```
-
     pub fn intersection<'a>(&'a self, other: &'a VecSet<T>) -> Intersection<'a, T> {
         Intersection {
             iter: self.iter(),
@@ -227,7 +219,6 @@ impl<T> VecSet<T> {
     /// let union: VecSet<_> = a.union(&b).cloned().collect();
     /// assert_eq!(union, [1, 2, 3, 4].iter().cloned().collect());
     /// ```
-
     pub fn union<'a>(&'a self, other: &'a VecSet<T>) -> Union<'a, T>
     where
         T: PartialEq,
@@ -249,7 +240,6 @@ impl<T> VecSet<T> {
     /// v.insert(1);
     /// assert_eq!(v.len(), 1);
     /// ```
-
     pub fn len(&self) -> usize {
         self.map.len()
     }
@@ -266,7 +256,6 @@ impl<T> VecSet<T> {
     /// v.insert(1);
     /// assert!(!v.is_empty());
     /// ```
-
     pub fn is_empty(&self) -> bool {
         self.map.is_empty()
     }
@@ -342,7 +331,6 @@ impl<T> VecSet<T> {
     /// b.insert(1);
     /// assert_eq!(a.is_disjoint(&b), false);
     /// ```
-
     pub fn is_disjoint(&self, other: &VecSet<T>) -> bool
     where
         T: PartialEq,
@@ -366,7 +354,6 @@ impl<T> VecSet<T> {
     /// set.insert(4);
     /// assert_eq!(set.is_subset(&sup), false);
     /// ```
-
     pub fn is_subset(&self, other: &VecSet<T>) -> bool
     where
         T: PartialEq,
@@ -394,7 +381,6 @@ impl<T> VecSet<T> {
     /// assert_eq!(set.is_superset(&sub), true);
     /// ```
     #[inline]
-
     pub fn is_superset(&self, other: &VecSet<T>) -> bool
     where
         T: PartialEq,
@@ -419,7 +405,6 @@ impl<T> VecSet<T> {
     /// assert_eq!(set.insert(2), false);
     /// assert_eq!(set.len(), 1);
     /// ```
-
     pub fn insert(&mut self, value: T) -> bool
     where
         T: PartialEq,
@@ -445,7 +430,6 @@ impl<T> VecSet<T> {
     /// assert_eq!(set.remove(&2), true);
     /// assert_eq!(set.remove(&2), false);
     /// ```
-
     pub fn remove<Q: PartialEq<T> + ?Sized>(&mut self, value: &Q) -> bool {
         self.map.remove(value).is_some()
     }
