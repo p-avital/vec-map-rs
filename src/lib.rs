@@ -26,7 +26,7 @@ use std::{
 ///
 /// Checking equality between maps is defined as "both maps are the same set", and performs worst
 /// for maps that are permutations of each other.
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct VecMap<K, V> {
     keys: Vec<K>,
     values: Vec<V>,
@@ -126,7 +126,10 @@ impl<K, V> VecMap<K, V> {
 
     #[post(!self.contains_key(key) -> ret.is_none())]
     #[post(self.contains_key(key) -> ret.is_some())]
-    pub fn get_key_value<'l, Q: PartialEq<K> + ?Sized>(&'l self, key: &Q) -> Option<(&'l K, &'l V)> {
+    pub fn get_key_value<'l, Q: PartialEq<K> + ?Sized>(
+        &'l self,
+        key: &Q,
+    ) -> Option<(&'l K, &'l V)> {
         self.position(key).map(|p| (&self.keys[p], &self.values[p]))
     }
 
@@ -144,16 +147,17 @@ impl<K, V> VecMap<K, V> {
 
     pub fn entry(&mut self, key: K) -> Entry<K, V>
     where
-        K: PartialEq
+        K: PartialEq,
     {
         match self
             .keys()
             .enumerate()
-            .find(|(_, k)|  &&key == k)
-            .map(|(n, _)| n) {
-                Some(index) => Entry::Occupied(OccupiedEntry{ map: self, index }),
-                None => Entry::Vacant(VacantEntry{ map: self, key }),
-            }
+            .find(|(_, k)| &&key == k)
+            .map(|(n, _)| n)
+        {
+            Some(index) => Entry::Occupied(OccupiedEntry { map: self, index }),
+            None => Entry::Vacant(VacantEntry { map: self, key }),
+        }
     }
 
     #[post(!old(self.contains_key(key)) -> ret.is_none())]
@@ -222,6 +226,12 @@ impl<K, V> VecMap<K, V> {
             iter: self.values.iter(),
             _phantom: Default::default(),
         }
+    }
+}
+
+impl<K: PartialEq, V> Default for VecMap<K, V> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
