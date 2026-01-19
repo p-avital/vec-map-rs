@@ -1,11 +1,17 @@
+#![no_std]
 #[cfg(feature = "serde_impl")]
 pub mod serde;
 pub mod set;
 
-use std::{
+use core::{
     iter::FromIterator,
     ops::{Index, IndexMut},
 };
+
+#[macro_use]
+extern crate alloc;
+
+use alloc::vec::{self, Vec};
 
 /// A std::vec::Vec based Map, motivated by the fact that, for some key types,
 /// iterating over a vector can be faster than other methods for small maps.
@@ -89,7 +95,7 @@ impl<K, V> VecMap<K, V> {
         K: PartialEq,
     {
         if let Some(position) = self.position(&key) {
-            std::mem::swap(&mut value, &mut self.values[position]);
+            core::mem::swap(&mut value, &mut self.values[position]);
             Some(value)
         } else {
             self.keys.push(key);
@@ -217,20 +223,20 @@ impl<K: PartialEq, V> Default for VecMap<K, V> {
     }
 }
 
-impl<K: std::fmt::Debug, V: std::fmt::Debug> std::fmt::Debug for VecMap<K, V> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<K: core::fmt::Debug, V: core::fmt::Debug> core::fmt::Debug for VecMap<K, V> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_map().entries(self.iter()).finish()
     }
 }
 
 fn reorder_vec<T>(vec: &mut Vec<T>, order: impl Iterator<Item = usize>) {
-    use std::mem::MaybeUninit;
+    use core::mem::MaybeUninit;
     let mut buffer: Vec<MaybeUninit<T>> = vec.iter().map(|_| MaybeUninit::uninit()).collect();
     for (from, to) in order.enumerate() {
-        std::mem::swap(&mut vec[to], unsafe { &mut *(buffer[from].as_mut_ptr()) });
+        core::mem::swap(&mut vec[to], unsafe { &mut *(buffer[from].as_mut_ptr()) });
     }
     for i in 0..vec.len() {
-        std::mem::swap(&mut vec[i], unsafe { &mut *(buffer[i].as_mut_ptr()) });
+        core::mem::swap(&mut vec[i], unsafe { &mut *(buffer[i].as_mut_ptr()) });
     }
 }
 
@@ -316,7 +322,7 @@ impl<K, V> IntoIterator for VecMap<K, V> {
 
 #[derive(Clone)]
 pub struct IntoIter<K, V> {
-    iter: std::iter::Zip<std::vec::IntoIter<K>, std::vec::IntoIter<V>>,
+    iter: core::iter::Zip<vec::IntoIter<K>, vec::IntoIter<V>>,
 }
 
 impl<K, V> Iterator for IntoIter<K, V> {
@@ -411,7 +417,7 @@ impl<'a, K, V> OccupiedEntry<'a, K, V> {
 
     /// Replaces the entry's value with the given one and returns the previous value.
     pub fn insert(&mut self, value: V) -> V {
-        std::mem::replace(self.get_mut(), value)
+        core::mem::replace(self.get_mut(), value)
     }
 
     /// Removes the entry from the map and returns its value.
@@ -436,7 +442,7 @@ impl<'a, K, V> VacantEntry<'a, K, V> {
 ///
 /// See [`VecMap::drain`](struct.VecMap.html#method.drain) for details.
 pub struct Drain<'a, K: 'a, V: 'a> {
-    iter: std::iter::Zip<std::vec::Drain<'a, K>, std::vec::Drain<'a, V>>,
+    iter: core::iter::Zip<vec::Drain<'a, K>, vec::Drain<'a, V>>,
 }
 
 /// An iterator yielding references to a `VecMap`'s keys and their corresponding values.
@@ -444,7 +450,7 @@ pub struct Drain<'a, K: 'a, V: 'a> {
 /// See [`VecMap::iter`](struct.VecMap.html#method.iter) for details.
 #[derive(Clone)]
 pub struct Iter<'a, K: 'a, V: 'a> {
-    iter: std::iter::Zip<std::slice::Iter<'a, K>, std::slice::Iter<'a, V>>,
+    iter: core::iter::Zip<core::slice::Iter<'a, K>, core::slice::Iter<'a, V>>,
 }
 
 /// An iterator yielding references to a `VecMap`'s keys and mutable references to their
@@ -452,15 +458,15 @@ pub struct Iter<'a, K: 'a, V: 'a> {
 ///
 /// See [`VecMap::iter_mut`](struct.VecMap.html#method.iter_mut) for details.
 pub struct IterMut<'a, K: 'a, V: 'a> {
-    iter: std::iter::Zip<std::slice::Iter<'a, K>, std::slice::IterMut<'a, V>>,
+    iter: core::iter::Zip<core::slice::Iter<'a, K>, core::slice::IterMut<'a, V>>,
 }
 
 /// An iterator yielding references to a `VecMap`'s keys in arbitrary order.
 ///
 /// See [`VecMap::keys`](struct.VecMap.html#method.keys) for details.
 pub struct Keys<'a, K: 'a, V> {
-    iter: std::slice::Iter<'a, K>,
-    _phantom: std::marker::PhantomData<V>,
+    iter: core::slice::Iter<'a, K>,
+    _phantom: core::marker::PhantomData<V>,
 }
 
 impl<'a, K, V> Clone for Keys<'a, K, V> {
@@ -476,8 +482,8 @@ impl<'a, K, V> Clone for Keys<'a, K, V> {
 ///
 /// See [`VecMap::values`](struct.VecMap.html#method.values) for details.
 pub struct Values<'a, K, V: 'a> {
-    iter: std::slice::Iter<'a, V>,
-    _phantom: std::marker::PhantomData<K>,
+    iter: core::slice::Iter<'a, V>,
+    _phantom: core::marker::PhantomData<K>,
 }
 
 impl<'a, K, V> Clone for Values<'a, K, V> {
