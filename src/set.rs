@@ -113,7 +113,7 @@ impl<T> VecSet<T> {
     ///     println!("{}", x);
     /// }
     /// ```
-    pub fn iter(&self) -> Iter<T> {
+    pub fn iter(&self) -> Iter<'_, T> {
         Iter {
             iter: self.map.keys(),
         }
@@ -264,7 +264,7 @@ impl<T> VecSet<T> {
 
     /// Clears the set, returning all elements in an iterator.
     #[inline]
-    pub fn drain(&mut self) -> Drain<T> {
+    pub fn drain(&mut self) -> Drain<'_, T> {
         Drain {
             iter: self.map.drain(),
         }
@@ -509,7 +509,7 @@ impl<K: PartialEq> From<VecSet<K>> for Vec<K> {
     }
 }
 
-impl<'a, 'b, T> BitOr<&'b VecSet<T>> for &'a VecSet<T>
+impl<T> BitOr<&VecSet<T>> for &VecSet<T>
 where
     T: PartialEq + Clone,
 {
@@ -540,7 +540,7 @@ where
     }
 }
 
-impl<'a, 'b, T> BitAnd<&'b VecSet<T>> for &'a VecSet<T>
+impl<T> BitAnd<&VecSet<T>> for &VecSet<T>
 where
     T: PartialEq + Clone,
 {
@@ -571,7 +571,7 @@ where
     }
 }
 
-impl<'a, 'b, T> BitXor<&'b VecSet<T>> for &'a VecSet<T>
+impl<T> BitXor<&VecSet<T>> for &VecSet<T>
 where
     T: PartialEq + Clone,
 {
@@ -602,7 +602,7 @@ where
     }
 }
 
-impl<'a, 'b, T> Sub<&'b VecSet<T>> for &'a VecSet<T>
+impl<T> Sub<&VecSet<T>> for &VecSet<T>
 where
     T: PartialEq + Clone,
 {
