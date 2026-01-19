@@ -315,7 +315,7 @@ impl<K, V> IntoIterator for VecMap<K, V> {
     type IntoIter = IntoIter<K, V>;
     fn into_iter(self) -> Self::IntoIter {
         IntoIter {
-            iter: self.keys.into_iter().zip(self.values.into_iter()),
+            iter: self.keys.into_iter().zip(self.values),
         }
     }
 }
