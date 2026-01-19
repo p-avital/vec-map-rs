@@ -1,5 +1,7 @@
+use alloc::vec::Vec;
+
 use crate::{Keys, VecMap};
-use std::{
+use core::{
     fmt,
     iter::{Chain, FromIterator},
     ops::{BitAnd, BitOr, BitXor, Sub},
