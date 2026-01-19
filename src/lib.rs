@@ -8,7 +8,6 @@ use core::{
     ops::{Index, IndexMut},
 };
 
-#[macro_use]
 extern crate alloc;
 
 use alloc::vec::{self, Vec};
@@ -104,7 +103,7 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
-    pub fn drain(&mut self) -> Drain<K, V> {
+    pub fn drain(&mut self) -> Drain<'_, K, V> {
         Drain {
             iter: self.keys.drain(..).zip(self.values.drain(..)),
         }
@@ -136,7 +135,7 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
-    pub fn entry(&mut self, key: K) -> Entry<K, V>
+    pub fn entry(&mut self, key: K) -> Entry<'_, K, V>
     where
         K: PartialEq,
     {
@@ -168,13 +167,13 @@ impl<K, V> VecMap<K, V> {
         }
     }
 
-    pub fn iter(&self) -> Iter<K, V> {
+    pub fn iter(&self) -> Iter<'_, K, V> {
         Iter {
             iter: self.keys.iter().zip(self.values.iter()),
         }
     }
 
-    pub fn iter_mut(&mut self) -> IterMut<K, V> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, K, V> {
         IterMut {
             iter: self.keys.iter().zip(self.values.iter_mut()),
         }
@@ -202,14 +201,14 @@ impl<K, V> VecMap<K, V> {
         self.keys == other.keys && self.values == other.values
     }
 
-    pub fn keys(&self) -> Keys<K, V> {
+    pub fn keys(&self) -> Keys<'_, K, V> {
         Keys {
             iter: self.keys.iter(),
             _phantom: Default::default(),
         }
     }
 
-    pub fn values(&self) -> Values<K, V> {
+    pub fn values(&self) -> Values<'_, K, V> {
         Values {
             iter: self.values.iter(),
             _phantom: Default::default(),
@@ -229,7 +228,7 @@ impl<K: core::fmt::Debug, V: core::fmt::Debug> core::fmt::Debug for VecMap<K, V>
     }
 }
 
-fn reorder_vec<T>(vec: &mut Vec<T>, order: impl Iterator<Item = usize>) {
+fn reorder_vec<T>(vec: &mut [T], order: impl Iterator<Item = usize>) {
     use core::mem::MaybeUninit;
     let mut buffer: Vec<MaybeUninit<T>> = vec.iter().map(|_| MaybeUninit::uninit()).collect();
     for (from, to) in order.enumerate() {
@@ -263,7 +262,7 @@ impl<'a, K: PartialEq + Copy + 'a, V: Copy + 'a> Extend<(&'a K, &'a V)> for VecM
     }
 }
 
-impl<'a, K: PartialEq, V> Extend<(K, V)> for VecMap<K, V> {
+impl<K: PartialEq, V> Extend<(K, V)> for VecMap<K, V> {
     fn extend<T: IntoIterator<Item = (K, V)>>(&mut self, iter: T) {
         for (key, value) in iter.into_iter() {
             self.insert(key, value);
