@@ -214,6 +214,27 @@ impl<K, V> VecMap<K, V> {
             _phantom: Default::default(),
         }
     }
+
+    /// Returns a slice containing all keys in the map.
+    ///
+    /// The order is arbitrary and may change when items are inserted or removed.
+    pub fn keys_as_slice(&self) -> &[K] {
+        &self.keys
+    }
+
+    /// Returns a slice containing all values in the map.
+    ///
+    /// The order is arbitrary and may change when items are inserted or removed.
+    pub fn values_as_slice(&self) -> &[V] {
+        &self.values
+    }
+
+    /// Returns a mutable slice containing all values in the map.
+    ///
+    /// The order is arbitrary and may change when items are inserted or removed.
+    pub fn values_as_slice_mut(&mut self) -> &mut [V] {
+        &mut self.values
+    }
 }
 
 impl<K: PartialEq, V> Default for VecMap<K, V> {
@@ -395,6 +416,16 @@ impl<'a, K, V> Entry<'a, K, V> {
             Occupied(entry) => entry.into_mut(),
             Vacant(entry) => entry.insert(default()),
         }
+    }
+
+    /// Ensures that the entry is occupied by inserting the default value if it is vacant.
+    ///
+    /// Returns a mutable reference to the entry's value.
+    pub fn or_default(self) -> &'a mut V
+    where
+        V: Default,
+    {
+        self.or_insert_with(Default::default)
     }
 }
 
