@@ -1,6 +1,6 @@
 [package]
 name = "vector-map"
-version = "1.0.2"
+version = "1.1.0"
 keywords = ["map", "structures", "vec-map"]
 authors = ["Pierre Avital <pierre.avital@gmail.com>"]
 edition = "2018"
